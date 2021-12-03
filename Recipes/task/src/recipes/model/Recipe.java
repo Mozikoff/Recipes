@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -12,6 +14,6 @@ import lombok.Setter;
 public class Recipe {
     private String name;
     private String description;
-    private String ingredients;
-    private String directions;
+    private List<String> ingredients;
+    private List<String> directions;
 }
