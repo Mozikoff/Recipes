@@ -635,6 +635,195 @@ files:
         }
     }
   learner_created: false
+- name: src/recipes/persistence/RecipeRepository.java
+  visible: true
+  text: |
+    package recipes.persistence;
+
+    import org.springframework.data.repository.CrudRepository;
+    import org.springframework.stereotype.Repository;
+    import recipes.businesslayer.Recipe;
+
+    @Repository
+    public interface RecipeRepository extends CrudRepository<Recipe, Long> {
+    }
+  learner_created: true
+- name: src/recipes/businesslayer/RecipeNewResponse.java
+  visible: true
+  text: |
+    package recipes.businesslayer;
+
+    import lombok.AllArgsConstructor;
+    import lombok.Getter;
+    import lombok.Setter;
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public class RecipeNewResponse {
+        private long id;
+    }
+  learner_created: true
+- name: src/recipes/businesslayer/RecipeService.java
+  visible: true
+  text: |
+    package recipes.businesslayer;
+
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.stereotype.Service;
+    import recipes.persistence.RecipeRepository;
+
+    import java.util.Optional;
+
+    @Service
+    public class RecipeService {
+
+        private final RecipeRepository repository;
+
+        @Autowired
+        public RecipeService(RecipeRepository repository) {
+            this.repository = repository;
+        }
+
+        public Optional<Recipe> findRecipeById(Long id) {
+            return repository.findById(id);
+        }
+
+        public Recipe save(Recipe recipe) {
+            return repository.save(recipe);
+        }
+
+        public void deleteRecipeById(Long id) {
+            repository.deleteById(id);
+        }
+    }
+  learner_created: true
+- name: src/recipes/businesslayer/RecipesManager.java
+  visible: true
+  text: |
+    package recipes.businesslayer;
+
+    import org.springframework.stereotype.Component;
+    import recipes.businesslayer.Recipe;
+
+    import java.util.HashMap;
+    import java.util.Map;
+
+    @Component
+    public class RecipesManager {
+        private int id = 0;
+        private Map<Integer, Recipe> recipes = new HashMap<>();
+
+        public int addRecipe(Recipe recipe) {
+            recipes.put(++id, recipe);
+            return id;
+        }
+
+        public Recipe getRecipeWithId(int id) {
+            return recipes.get(id);
+        }
+    }
+  learner_created: true
+- name: src/recipes/presentation/RecipesController.java
+  visible: true
+  text: |
+    package recipes.presentation;
+
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.http.HttpStatus;
+    import org.springframework.http.ResponseEntity;
+    import org.springframework.web.bind.annotation.*;
+    import org.springframework.web.server.ResponseStatusException;
+    import recipes.businesslayer.Recipe;
+    import recipes.businesslayer.RecipeNewResponse;
+    import recipes.businesslayer.RecipeService;
+
+    import javax.validation.Valid;
+    import java.util.Optional;
+
+    @RestController
+    public class RecipesController {
+
+        @Autowired
+        RecipeService service;
+
+        @GetMapping("/api/recipe/{id}")
+        public Recipe getRecipe(@PathVariable long id) {
+            Optional<Recipe> recipe = service.findRecipeById(id);
+            if (recipe.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            }
+            return recipe.get();
+        }
+
+        @PostMapping("/api/recipe/new")
+        public RecipeNewResponse saveRecipe(@Valid @RequestBody Recipe newRecipe) {
+            Recipe recipe = service.save(newRecipe);
+            return new RecipeNewResponse(recipe.getId());
+        }
+
+        @DeleteMapping("/api/recipe/{id}")
+        public ResponseEntity deleteRecipe(@PathVariable long id) {
+            Optional<Recipe> recipe = service.findRecipeById(id);
+            if (recipe.isEmpty()) {
+                return new ResponseEntity(HttpStatus.NOT_FOUND);
+            }
+            service.deleteRecipeById(id);
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+    }
+  learner_created: true
+- name: src/recipes/businesslayer/Recipe.java
+  visible: true
+  text: |
+    package recipes.businesslayer;
+
+    import com.fasterxml.jackson.annotation.JsonIgnore;
+    import lombok.AllArgsConstructor;
+    import lombok.Getter;
+    import lombok.NoArgsConstructor;
+    import lombok.Setter;
+
+    import javax.persistence.*;
+    import javax.validation.constraints.NotBlank;
+    import javax.validation.constraints.NotNull;
+    import javax.validation.constraints.Size;
+    import java.util.List;
+
+    @Entity
+    @Table(name = "recipe")
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public class Recipe {
+
+        @Id
+        @JsonIgnore
+        @GeneratedValue(strategy = GenerationType.AUTO)
+        private long id;
+
+        @NotBlank
+        @Column(name = "name")
+        private String name;
+
+        @NotBlank
+        @Column(name = "description")
+        private String description;
+
+        @NotNull
+        @Size(min = 1)
+        @ElementCollection
+        @Column(name = "ingredients")
+        private List<String> ingredients;
+
+        @NotNull
+        @Size(min = 1)
+        @ElementCollection
+        @Column(name = "directions")
+        private List<String> directions;
+    }
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/180/stages/920/implement#comment
 status: Unchecked
 record: -1

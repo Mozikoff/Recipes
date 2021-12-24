@@ -12,7 +12,7 @@
     <orderEntry type="module" module-name="Recipes.Recipes-task-build-tmp.main" />
     <orderEntry type="module" module-name="Recipes.util.main" />
     <orderEntry type="module" module-name="Recipes.util.test" production-on-test="" />
-    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.projectlombok:lombok:1.18.16" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.projectlombok:lombok:1.18.22" level="project" />
     <orderEntry type="library" name="Gradle: com.github.hyperskill:hs-test:release-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Gradle: org.assertj:assertj-swing-junit:3.9.2" level="project" />
     <orderEntry type="library" name="Gradle: junit:junit:4.12" level="project" />

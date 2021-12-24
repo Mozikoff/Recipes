@@ -308,6 +308,116 @@ files:
         }
     }
   learner_created: false
+- name: src/recipes/businesslayer/Recipe.java
+  visible: true
+  text: |
+    package recipes.model;
+
+    import lombok.AllArgsConstructor;
+    import lombok.Getter;
+    import lombok.NoArgsConstructor;
+    import lombok.Setter;
+
+    import java.util.List;
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public class Recipe {
+        private String name;
+        private String description;
+        private List<String> ingredients;
+        private List<String> directions;
+    }
+  learner_created: true
+- name: src/recipes/businesslayer/RecipeNewResponse.java
+  visible: true
+  text: |
+    package recipes.model;
+
+    import lombok.AllArgsConstructor;
+    import lombok.Getter;
+    import lombok.NoArgsConstructor;
+    import lombok.Setter;
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public class RecipeNewResponse {
+        private int id;
+    }
+  learner_created: true
+- name: src/recipes/businesslayer/RecipesManager.java
+  visible: true
+  text: |
+    package recipes.model;
+
+    import org.springframework.stereotype.Component;
+
+    import java.util.HashMap;
+    import java.util.Map;
+
+    @Component
+    public class RecipesManager {
+        private int id = 0;
+        private Map<Integer, Recipe> recipes = new HashMap<>();
+
+        public int addRecipe(Recipe recipe) {
+            recipes.put(++id, recipe);
+            return id;
+        }
+
+        public Recipe getRecipeWithId(int id) {
+            return recipes.get(id);
+        }
+    }
+  learner_created: true
+- name: src/recipes/presentation/RecipesController.java
+  visible: true
+  text: |
+    package recipes.controller;
+
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.http.HttpStatus;
+    import org.springframework.web.bind.annotation.*;
+    import org.springframework.web.server.ResponseStatusException;
+    import recipes.model.Recipe;
+    import recipes.model.RecipeNewResponse;
+    import recipes.model.RecipesManager;
+
+    import java.util.Objects;
+
+    @RestController
+    public class RecipesController {
+
+        @Autowired
+        RecipesManager manager;
+
+        @GetMapping("/api/recipe/{id}")
+        public Recipe getRecipe(@PathVariable int id) {
+            Recipe recipe = manager.getRecipeWithId(id);
+            if (Objects.isNull(recipe)) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            }
+            return recipe;
+        }
+
+        @PostMapping("/api/recipe/new")
+        public RecipeNewResponse overrideRecipe(@RequestBody Recipe newRecipe) {
+            return new RecipeNewResponse(manager.addRecipe(newRecipe));
+        }
+    }
+  learner_created: true
+- name: src/recipes/persistence/RecipeRepository.java
+  visible: true
+  learner_created: true
+- name: src/recipes/businesslayer/RecipeService.java
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/180/stages/919/implement#comment
-status: Unchecked
-record: -1
+status: Solved
+feedback:
+  message: Congratulations!
+  time: Fri, 24 Dec 2021 14:27:43 UTC
+record: 3
